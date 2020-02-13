@@ -160,5 +160,5 @@ imgui.ini
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode
 src/main/deploy/example.txt
-/.wpilib
-/.vscode
+/.wpilib/
+/.vscode/
