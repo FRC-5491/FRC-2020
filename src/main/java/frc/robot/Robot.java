@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
     rightTwo.configOpenloopRamp(2.0);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
+    
 
   }
 //-----------------------------------------------------------------------------
@@ -89,7 +90,7 @@ public class Robot extends TimedRobot {
 //-----------------------------------------------------------------------------
   @Override
   public void teleopPeriodic() {
-    drive(computeDriveValuesArcadeDrive(driverStick.getY(), driverStick.getX(), true));
+    drive(computeDriveValuesArcadeDrive((-driverStick.getY()), (-driverStick.getX()), true));
   }
 //-----------------------------------------------------------------------------
   @Override
