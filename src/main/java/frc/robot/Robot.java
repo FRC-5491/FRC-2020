@@ -16,7 +16,9 @@ package frc.robot;
 
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
 /** 
@@ -32,6 +34,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
 public class Robot extends TimedRobot {
+
+  public double ch0Amps = 0;
+  public double ch1Amps = 0;
+  public double ch2Amps = 0;
+  public double ch3Amps = 0;
+
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
  /** 
   * //PWM fallback incase CANbus kerfucks itself//
@@ -62,10 +71,8 @@ public class Robot extends TimedRobot {
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
-
+    updateDiagVals();
     //SPEED CONTROLLER CONFIGURATION
-    leftTwo.follow(leftOne);
-    rightTwo.follow(rightOne);
     leftOne.configOpenloopRamp(2.0);
     leftTwo.configOpenloopRamp(2.0);
     rightOne.configOpenloopRamp(2.0);
@@ -78,27 +85,33 @@ public class Robot extends TimedRobot {
 //-----------------------------------------------------------------------------
   @Override
   public void autonomousInit() {
+    updateDiagVals();
   }
 //-----------------------------------------------------------------------------
   @Override
   public void autonomousPeriodic() {
+    updateDiagVals();
   }
 //-----------------------------------------------------------------------------
   @Override
   public void teleopInit() {
+    updateDiagVals();
   }
 //-----------------------------------------------------------------------------
   @Override
   public void teleopPeriodic() {
+    updateDiagVals();
     drive(computeDriveValuesArcadeDrive((-driverStick.getY()), (-driverStick.getX()), true));
   }
 //-----------------------------------------------------------------------------
   @Override
   public void testInit() {
+    updateDiagVals();
   }
 //-----------------------------------------------------------------------------
   @Override
   public void testPeriodic() {
+    updateDiagVals();
   }
 //-----------------------------------------------------------------------------
 /**
@@ -272,10 +285,23 @@ public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation
  * side speed controllers.
  * @see double[] computeDriveValuesLowSpeed(double xSpeed, double zRotation, boolean squareInputs)
  */ 
-public void drive(double[] motorValues){
+  public void drive(double[] motorValues){
     leftOne.set(ControlMode.PercentOutput, motorValues[0]);
+    leftTwo.set(ControlMode.PercentOutput, motorValues[0]);
     rightOne.set(ControlMode.PercentOutput, motorValues[1]);
+    rightTwo.set(ControlMode.PercentOutput, motorValues[1]);
     
   }
 //-----------------------------------------------------------------------------
+/**
+ * 
+ */
+  public void updateDiagVals(){
+    ch0Amps = pdp.getCurrent(0);
+    ch1Amps = pdp.getCurrent(1);
+    ch2Amps = pdp.getCurrent(2);
+    ch3Amps = pdp.getCurrent(3);
+
+    SmartDashboard.putData(pdp);
+  }
 }
