@@ -1,6 +1,0 @@
-class DiagnosticInfo
-{
-    public DiagnosticInfo(){
-
-    }
-}
