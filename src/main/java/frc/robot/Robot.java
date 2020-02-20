@@ -308,13 +308,16 @@ public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation
  * 
  */
   public void updateDiagVals(){
-    double tankPSI = airPressure(aPv);
+    double tankPSI = airPressure(airPressure(tankPressure.getVoltage()));
+    double regulatorPSI = airPressure(airPressure(regulatorPressure.getVoltage()));
     ch0Amps = pdp.getCurrent(0);
     ch1Amps = pdp.getCurrent(1);
     ch2Amps = pdp.getCurrent(2);
     ch3Amps = pdp.getCurrent(3);
 
-    Shuffleboard.getTab("My Tab").add("My Number", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
+    //SmartDashboard.putNumber(key, value)
+    Shuffleboard.getTab("My Tab").add("Tank PSI", tankPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
+    Shuffleboard.getTab("My Tab").add("Regulator PSI", regulatorPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
   }
 
   /**
