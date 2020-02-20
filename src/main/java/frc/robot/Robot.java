@@ -6,11 +6,7 @@
 /*| Author(s): Jack Pirone                                               |*/
 /*+----------------------------------------------------------------------+*/
 /*| A special thanks to Maria P. and George R. for keeping me from going |*/
-<<<<<<< HEAD
-/*| insane while documenting this code.                                  |*/
-=======
 /*| insane while writing and documenting this code.                      |*/
->>>>>>> parent of 88b5c83... Bug Fixes
 /*+----------------------------------------------------------------------+*/
 /*|                                                                      |*/
 /*+----------------------------------------------------------------------|*/
@@ -20,6 +16,8 @@ package frc.robot;
 
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
@@ -36,6 +34,9 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 
 //FOR CANbus//
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
@@ -74,10 +75,10 @@ public class Robot extends TimedRobot {
   //See controller_layout.png//
   Joystick driverStick = new Joystick(0);
   
-  AnalogInput tankPressure = new AnalogInput(0);
-  AnalogInput regulatorPressure = new AnalogInput(1);
+  AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
+  AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
 
-  Compressor c = new Compressor(0);
+  public static Compressor c = new Compressor(0);
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
@@ -306,18 +307,29 @@ public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation
 /**
  * 
  */
-public void updateDiagVals(){
-  double tankPSI = airPressure(airPressure(tankPressure.getVoltage()));
-  double regulatorPSI = airPressure(airPressure(regulatorPressure.getVoltage()));
-  ch0Amps = pdp.getCurrent(0);
-  ch1Amps = pdp.getCurrent(1);
-  ch2Amps = pdp.getCurrent(2);
-  ch3Amps = pdp.getCurrent(3);
+  public void updateDiagVals(){
+    double tankPSI = airPressure(aPv);
+    ch0Amps = pdp.getCurrent(0);
+    ch1Amps = pdp.getCurrent(1);
+    ch2Amps = pdp.getCurrent(2);
+    ch3Amps = pdp.getCurrent(3);
 
-  SmartDashboard.putData(pdp);
+    Shuffleboard.getTab("My Tab").add("My Number", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
+  }
 
-  SmartDashboard.putNumber("Tank PSI", tankPSI);
-  SmartDashboard.putNumber("Regulator PSI", regulatorPSI);
+  /**
+  //---------------------------------------------------------------------------
+   * 
+  public double airPressure(double aPv) {
+   */
+    double aP;
+    double math;
+    double maath;
+    maath = 250 * math;
+    math = aPv / 5;
+    return aP;
+    aP = maath - 25;
+  }
 }
 
 //---------------------------------------------------------------------------
