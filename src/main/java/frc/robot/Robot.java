@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
   AnalogInput tankPressure = new AnalogInput(0);
   AnalogInput regulatorPressure = new AnalogInput(1);
 
-  Compressor c = new Compressor(0);
+  Compressor c = new Compressor(5);
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
