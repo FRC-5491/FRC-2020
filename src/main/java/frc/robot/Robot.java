@@ -17,6 +17,8 @@ package frc.robot;
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -68,6 +70,10 @@ public class Robot extends TimedRobot {
   //See controller_layout.png//
   Joystick driverStick = new Joystick(0);
   
+  AnalogInput tankPressure = new AnalogInput(0);
+  AnalogInput regulatorPressure = new AnalogInput(1);
+
+  Compressor c = new Compressor(0);
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
@@ -79,7 +85,7 @@ public class Robot extends TimedRobot {
     rightTwo.configOpenloopRamp(2.0);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
-    
+    c.setClosedLoopControl(true);
 
   }
 //-----------------------------------------------------------------------------
@@ -296,12 +302,31 @@ public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation
 /**
  * 
  */
-  public void updateDiagVals(){
-    ch0Amps = pdp.getCurrent(0);
-    ch1Amps = pdp.getCurrent(1);
-    ch2Amps = pdp.getCurrent(2);
-    ch3Amps = pdp.getCurrent(3);
+public void updateDiagVals(){
+  double tankPSI = airPressure(airPressure(tankPressure.getVoltage()));
+  double regulatorPSI = airPressure(airPressure(regulatorPressure.getVoltage()));
+  ch0Amps = pdp.getCurrent(0);
+  ch1Amps = pdp.getCurrent(1);
+  ch2Amps = pdp.getCurrent(2);
+  ch3Amps = pdp.getCurrent(3);
 
-    SmartDashboard.putData(pdp);
-  }
+  SmartDashboard.putData(pdp);
+
+  SmartDashboard.putNumber("Tank PSI", tankPSI);
+  SmartDashboard.putNumber("Regulator PSI", regulatorPSI);
+}
+
+//---------------------------------------------------------------------------
+/**
+ * 
+ */
+public double airPressure(double aPv) {
+  double aP;
+  double math;
+  double maath;
+  math = aPv / 5;
+  maath = 250 * math;
+  aP = maath - 25;
+  return aP;
+}
 }
