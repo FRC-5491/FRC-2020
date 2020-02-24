@@ -2,6 +2,8 @@ package edu.wpi.first.wpilibj.drive;
 
 import java.util.StringJoiner;
 
+import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -20,8 +22,8 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
 
   private static int instances;
 
-  private final SpeedController m_leftMotor;
-  private final SpeedController m_rightMotor;
+  private final VictorSPX m_leftMotor;
+  private final VictorSPX m_rightMotor;
   
 
   private double m_quickStopThreshold = kDefaultQuickStopThreshold;
@@ -29,16 +31,17 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
   private double m_quickStopAccumulator;
   private double m_rightSideInvertMultiplier = -1.0;
   private boolean m_reported;
+  private double[] controllerVals = {0.0, 0.0};
 
   /**
    * Construct a DifferentialDrive that uses VictorSPX CANbus Speed Controllers
    * 
-   * @param leftMotor
-   * @param rightMotor
+   * @param leftMotor Lead VictorSPX left side speed controller.
+   * @param rightMotor Lead VictorSPX right side speed controller. THIS MUST BE INVERTED
    */
-  public DifferentialDrive(VictorSPX leftMotor1, VictorSPX leftMotor2, VictorSPX rightMotor1, VictorSPX rightMotor2) {
-    m_leftMotor1 = leftMotor1;
-    m_rightMotor1 = rightMotor1;
+  public DifferentialDrive(VictorSPX leftMotor, VictorSPX rightMotor) {
+    m_leftMotor = leftMotor;
+    m_rightMotor = rightMotor;
     SendableRegistry.addChild(this, m_leftMotor);
     SendableRegistry.addChild(this, m_rightMotor);
     instances++;
@@ -117,11 +120,10 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
       }
     }
 
-    m_leftMotor.set(MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
-    double maxOutput = m_maxOutput * m_rightSideInvertMultiplier;
-    m_rightMotor.set(MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
-
-    feed();
+    m_leftMotor.set(ControlMode.PercentOutput, MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
+    controllerVals[0] = MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput;
+    m_rightMotor.set(ControlMode.PercentOutput, MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput);
+    controlVals[1] = MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput;
   }
 
   /**
@@ -202,60 +204,11 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
       rightMotorOutput /= maxMagnitude;
     }
 
-    m_leftMotor.set(leftMotorOutput * m_maxOutput);
-    m_rightMotor.set(rightMotorOutput * m_maxOutput * m_rightSideInvertMultiplier);
-
-    feed();
+    m_leftMotor.set(ControlMode.PercentOutput, MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
+    m_rightMotor.set(ControlMode.PercentOutput, MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput);
   }
 
-  /**
-   * Tank drive method for differential drive platform.
-   * The calculated values will be squared to decrease sensitivity at low speeds.
-   *
-   * @param leftSpeed  The robot's left side speed along the X axis [-1.0..1.0]. Forward is
-   *                   positive.
-   * @param rightSpeed The robot's right side speed along the X axis [-1.0..1.0]. Forward is
-   *                   positive.
-   */
-  public void tankDrive(double leftSpeed, double rightSpeed) {
-    tankDrive(leftSpeed, rightSpeed, true);
-  }
-
-  /**
-   * Tank drive method for differential drive platform.
-   *
-   * @param leftSpeed     The robot left side's speed along the X axis [-1.0..1.0]. Forward is
-   *                      positive.
-   * @param rightSpeed    The robot right side's speed along the X axis [-1.0..1.0]. Forward is
-   *                      positive.
-   * @param squareInputs If set, decreases the input sensitivity at low speeds.
-   */
-  public void tankDrive(double leftSpeed, double rightSpeed, boolean squareInputs) {
-    if (!m_reported) {
-      HAL.report(tResourceType.kResourceType_RobotDrive,
-                 tInstances.kRobotDrive2_DifferentialTank, 2);
-      m_reported = true;
-    }
-
-    leftSpeed = MathUtil.clamp(leftSpeed, -1.0, 1.0);
-    leftSpeed = applyDeadband(leftSpeed, m_deadband);
-
-    rightSpeed = MathUtil.clamp(rightSpeed, -1.0, 1.0);
-    rightSpeed = applyDeadband(rightSpeed, m_deadband);
-
-    // Square the inputs (while preserving the sign) to increase fine control
-    // while permitting full power.
-    if (squareInputs) {
-      leftSpeed = Math.copySign(leftSpeed * leftSpeed, leftSpeed);
-      rightSpeed = Math.copySign(rightSpeed * rightSpeed, rightSpeed);
-    }
-
-    m_leftMotor.set(leftSpeed * m_maxOutput);
-    m_rightMotor.set(rightSpeed * m_maxOutput * m_rightSideInvertMultiplier);
-
-    feed();
-  }
-
+  
   /**
    * Sets the QuickStop speed threshold in curvature drive.
    *
@@ -287,29 +240,11 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
     m_quickStopAlpha = alpha;
   }
 
-  /**
-   * Gets if the power sent to the right side of the drivetrain is multipled by -1.
-   *
-   * @return true if the right side is inverted
-   */
-  public boolean isRightSideInverted() {
-    return m_rightSideInvertMultiplier == -1.0;
-  }
-
-  /**
-   * Sets if the power sent to the right side of the drivetrain should be multipled by -1.
-   *
-   * @param rightSideInverted true if right side power should be multipled by -1
-   */
-  public void setRightSideInverted(boolean rightSideInverted) {
-    m_rightSideInvertMultiplier = rightSideInverted ? -1.0 : 1.0;
-  }
 
   @Override
   public void stopMotor() {
-    m_leftMotor.stopMotor();
-    m_rightMotor.stopMotor();
-    feed();
+    m_leftMotor.set(ControlMode.PercentOutput, 0);
+    m_rightMotor.set(ControlMode.PercentOutput, 0);
   }
 
   @Override
@@ -322,10 +257,7 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
     builder.setSmartDashboardType("DifferentialDrive");
     builder.setActuator(true);
     builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Left Motor Speed", m_leftMotor::get, m_leftMotor::set);
-    builder.addDoubleProperty(
-        "Right Motor Speed",
-        () -> m_rightMotor.get() * m_rightSideInvertMultiplier,
-        x -> m_rightMotor.set(x * m_rightSideInvertMultiplier));
+    builder.addDoubleProperty("Left Motor Speed",  () -> controllerVals[0], y -> m_leftMotor.set(ControlMode.PercentOutput, y));
+    builder.addDoubleProperty("Right Motor Speed", () -> controllerVals[1] * -1.0, x -> m_rightMotor.set(ControlMode.PercentOutput, x * -1.0));
   }
 }
