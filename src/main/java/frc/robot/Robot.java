@@ -317,9 +317,6 @@ public void updateDiagVals(){
 }
 
 //---------------------------------------------------------------------------
-/**
- * 
- */
 public double airPressure(double aPv) {
   double aP;
   double math;
