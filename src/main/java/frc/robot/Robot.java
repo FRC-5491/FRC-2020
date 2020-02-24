@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   VictorSPX leftTwo = new VictorSPX(4);  //CAN ID: 4
 
   //Drive Base//
-  public DifferentialDrive robot = new DifferentialDrive(leftOne, leftTwo);
+  public DifferentialDrive robot = new DifferentialDrive(leftOne, leftTwo, rightOne, rightTwo);
  
   //PS4 Controller//
   //Controller layout definition is as follows//

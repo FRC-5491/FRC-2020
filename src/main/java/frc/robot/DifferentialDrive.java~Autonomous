@@ -12,6 +12,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -40,9 +41,11 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
    * @param leftMotor Lead VictorSPX left side speed controller.
    * @param rightMotor Lead VictorSPX right side speed controller. THIS MUST BE INVERTED
    */
-  public DifferentialDrive(VictorSPX leftMotor, VictorSPX rightMotor) {
-    m_leftMotor = leftMotor;
-    m_rightMotor = rightMotor;
+  public DifferentialDrive(VictorSPX leftMotor1, VictorSPX leftMotor2, VictorSPX rightMotor1, VictorSPX rightMotor2) {
+    m_leftMotor = leftMotor1;
+    m_rightMotor = rightMotor1;
+    leftMotor2.follow(leftMotor1);
+    rightMotor2.follow(rightMotor1);
     SendableRegistry.addChild(this, m_leftMotor);
     SendableRegistry.addChild(this, m_rightMotor);
     instances++;
