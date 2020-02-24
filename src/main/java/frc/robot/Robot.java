@@ -16,7 +16,6 @@ package frc.robot;
 
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,17 +38,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import java.util.Map;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-
 public class Robot extends TimedRobot {
-
-  public double ch0Amps = 0;
-  public double ch1Amps = 0;
-  public double ch2Amps = 0;
-  public double ch3Amps = 0;
-
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
  /** 
   * //PWM fallback incase CANbus kerfucks itself//
@@ -61,28 +50,43 @@ public class Robot extends TimedRobot {
   */
   
   
-  
   //CANbus <--> multiplexed. ADDRESSES ARE VERY IMPORTANT!!//
-  
-  VictorSPX rightOne = new VictorSPX(1);
-  VictorSPX rightTwo = new VictorSPX(2);
-  VictorSPX leftOne = new VictorSPX(3);
-  VictorSPX leftTwo = new VictorSPX(4);
+  VictorSPX rightOne = new VictorSPX(1); //CAN ID: 1
+  VictorSPX rightTwo = new VictorSPX(2); //CAN ID: 2
+  VictorSPX leftOne = new VictorSPX(3);  //CAN ID: 3
+  VictorSPX leftTwo = new VictorSPX(4);  //CAN ID: 4
 
+  //Drive Base//
+  public DifferentialDrive robot = new DifferentialDrive(leftOne, leftTwo);
 
   //PS4 Controller//
   //Controller layout definition is as follows//
   //See controller_layout.png//
   Joystick driverStick = new Joystick(0);
   
+<<<<<<< Autonomous
   AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
   AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
 
   public static Compressor c = new Compressor(0);
+=======
+  //Air Pressure Sensors//
+  AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
+  AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
+
+  //Compressor -- CAN ID: 5//
+  public static Compressor c = new Compressor(5);
+
+  //PDP -- CAN ID: 0//
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);  
+
+>>>>>>> New Drive Code
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
+
     updateDiagVals();
+
     //SPEED CONTROLLER CONFIGURATION
     leftOne.configOpenloopRamp(2.0);
     leftTwo.configOpenloopRamp(2.0);
@@ -93,9 +97,12 @@ public class Robot extends TimedRobot {
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
 
-
+    //Compressor Configuration//
     c.setClosedLoopControl(true);
+<<<<<<< Autonomous
 
+=======
+>>>>>>> New Drive Code
   }
 //-----------------------------------------------------------------------------
   @Override
@@ -116,7 +123,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     updateDiagVals();
-    drive(computeDriveValuesArcadeDrive((-driverStick.getY()), (-driverStick.getX()), true));
+  
   }
 //-----------------------------------------------------------------------------
   @Override
@@ -126,186 +133,9 @@ public class Robot extends TimedRobot {
 //-----------------------------------------------------------------------------
   @Override
   public void testPeriodic() {
+
+    robot.arcadeDrive(driverStick.getY(), driverStick.getX());
     updateDiagVals();
-  }
-//-----------------------------------------------------------------------------
-/**
- * This method handles the calculation of the values for CURVATURE DRIVEto be either directly into the
- * speed controllers, or into drive(double[] motorValues);
- * @param xSpeed --  Speed along the X AXIS. Range of [-1.0..1.0],
- * with forwards being positive. Normally fed the joystick Y AXIS values.
- * @param zRotation -- Rotation rate around the Z AXIS. Range of [-1.0..1.0],
- * with clockwise being positive. Normally fed the joystick X AXIS values.
- * @param isQuickTurn -- Is this an arcade drive style turn?.
- * @return An array containing the data type double, spot zero holds the values for the left speed controllers,
- * spot one holds the value for the right speed controllers.
- * !!THIS METHOD ASSUMES THE RIGHT SIDE SPEED CONTROLLERS ARE INVERTED!!
- * @see drive(double[] motorValues)
- */
-public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
-  
-  //LEFT SIDE VALUES ARE IN SPOT 0, RIGHT SIDE ARE IN SPOT 1  
-  double[] values = {0.0, 0.0};
-  double motorMaxOutput = 1.0;
-  double deadband = 0.02;
-  double motorLeftOutput = 0.0;
-  double motorRightOutput = 0.0;
-  final double quickStopThreshold = 0.2;
-  final double quickStopAlpha = 0.1;
-  double quickStopAccumulator = 0.0;
-
-  xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-  xSpeed = applyDeadband(xSpeed, deadband);
-
-  zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-  zRotation = applyDeadband(zRotation, deadband);
-
-  double angularPower;
-  boolean overPower;
-
-  if (isQuickTurn) {
-    if (Math.abs(xSpeed) < quickStopThreshold) {
-      quickStopAccumulator = (1 - quickStopAlpha) * quickStopAccumulator
-          + quickStopAlpha * MathUtil.clamp(zRotation, -1.0, 1.0) * 2;
-    }
-    overPower = true;
-    angularPower = zRotation;
-  } else {
-    overPower = false;
-    angularPower = Math.abs(xSpeed) * zRotation - quickStopAccumulator;
-
-    if (quickStopAccumulator > 1) {
-      quickStopAccumulator -= 1;
-    } else if (quickStopAccumulator < -1) {
-      quickStopAccumulator += 1;
-    } else {
-      quickStopAccumulator = 0.0;
-    }
-  }
-
-  double leftMotorOutput = xSpeed + angularPower;
-  double rightMotorOutput = xSpeed - angularPower;
-
-  // If rotation is overpowered, reduce both outputs to be within an acceptable range
-  if (overPower) {
-    if (motorLeftOutput > 1.0) {
-      motorRightOutput -=  motorLeftOutput - 1.0;
-      leftMotorOutput = 1.0;
-    } else if (motorRightOutput > 1.0) {
-      motorLeftOutput -= motorRightOutput - 1.0;
-      motorRightOutput = 1.0;
-    } else if (motorLeftOutput < -1.0) {
-      motorRightOutput -= motorLeftOutput + 1.0;
-      motorLeftOutput = -1.0;
-    } else if (motorRightOutput < -1.0) {
-      motorLeftOutput -= motorRightOutput + 1.0;
-      motorRightOutput = -1.0;
-    }
-  }
-
-  // Normalize the wheel speeds
-  double maxMagnitude = Math.max(Math.abs(leftMotorOutput), Math.abs(rightMotorOutput));
-  if (maxMagnitude > 1.0) {
-    leftMotorOutput /= maxMagnitude;
-    rightMotorOutput /= maxMagnitude;
-  }
-
-  values[1] = (leftMotorOutput * motorMaxOutput);
-  values[0] = (rightMotorOutput * motorMaxOutput);
-  return values;
-}
-//-----------------------------------------------------------------------------
-/**
- * This method handles the calculation of the values for ARCADE DRIVE to be either directly into the
- * speed controllers, or into drive(double[] motorValues);
- * @param xSpeed --  Speed along the X AXIS. Range of [-1.0..1.0],
- * with forwards being positive. Normally fed the joystick Y AXIS values.
- * @param zRotation -- Rotation rate around the Z AXIS. Range of [-1.0..1.0],
- * with clockwise being positive. Normally fed the joystick X AXIS values.
- * @param squareInputs -- Allow fine control at high speeds.
- * @return A doble containing the values for the left speed controllers,
- * spot one holds the value for the right speed controllers.
- * !!THIS METHOD ASSUMES THE RIGHT SIDE SPEED CONTROLLERS ARE INVERTED!!
- * @see drive(double[] motorValues)
- */
-  public double[] computeDriveValuesArcadeDrive(double xSpeed, double zRotation, boolean squareInputs){
-  //LEFT SIDE VALUES ARE IN SPOT 0, RIGHT SIDE ARE IN SPOT 1  
-    double[] values = {0.0, 0.0};
-    double motorMaxOutput = 1.0;
-    double deadband = 0.02;
-    double motorLeftOutput;
-    double motorRightOutput;
-
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-    xSpeed = applyDeadband(xSpeed, deadband);
-
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-    zRotation = applyDeadband(zRotation, deadband);
-
-    //Allow fine control at high speeds by squaring input values.
-    if (squareInputs) {
-      xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
-      zRotation = Math.copySign(zRotation * zRotation, zRotation);
-    }
-
-    double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
-
-    if (xSpeed >= 0.0) {
-      // First quadrant, else second quadrant
-      if (zRotation >= 0.0) {
-        motorLeftOutput = maxInput;
-        motorRightOutput = xSpeed - zRotation;
-      } else {
-        motorLeftOutput = xSpeed + zRotation;
-        motorRightOutput = maxInput;
-      }
-    } else {
-      // Third quadrant, else fourth quadrant
-      if (zRotation >= 0.0) {
-        motorLeftOutput = xSpeed + zRotation;
-        motorRightOutput = maxInput;
-      } else {
-        motorLeftOutput = maxInput;
-        motorRightOutput = xSpeed - zRotation;
-      }
-    }
-
-    values[1] = MathUtil.clamp(motorLeftOutput, -1.0, 1.0) * motorMaxOutput;
-    values[0] = MathUtil.clamp(motorRightOutput, -1.0, 1.0) * motorMaxOutput;
-    return values;
-  }
-//-----------------------------------------------------------------------------
-/**
- * This method handles the application of the deadband to the speed controller control signals.
- * @param value The control signal to send to the speed controller.
- * @param deadband The deadband value to apply to the control signals.
- * @return The value that gets written to the speed controller.
- */
-  protected double applyDeadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-//-----------------------------------------------------------------------------
-/**
- * This method handles writing values to VictorSPX CANbus speed controllers.
- * @param motorValues An array containing 2 spots, with spot zero being the value
- * for the left side speed controllers, and spot one being the value for the right
- * side speed controllers.
- * @see double[] computeDriveValuesLowSpeed(double xSpeed, double zRotation, boolean squareInputs)
- */ 
-  public void drive(double[] motorValues){
-    leftOne.set(ControlMode.PercentOutput, motorValues[0]);
-    leftTwo.set(ControlMode.PercentOutput, motorValues[0]);
-    rightOne.set(ControlMode.PercentOutput, motorValues[1]);
-    rightTwo.set(ControlMode.PercentOutput, motorValues[1]);
-    
   }
 //-----------------------------------------------------------------------------
 /**
@@ -314,11 +144,7 @@ public double[] computeDriveValuesCurvatureDrive(double xSpeed, double zRotation
   public void updateDiagVals(){
     double tankPSI = airPressure(airPressure(tankPressure.getVoltage()));
     double regulatorPSI = airPressure(airPressure(regulatorPressure.getVoltage()));
-    ch0Amps = pdp.getCurrent(0);
-    ch1Amps = pdp.getCurrent(1);
-    ch2Amps = pdp.getCurrent(2);
-    ch3Amps = pdp.getCurrent(3);
-
+    
     //SmartDashboard.putNumber(key, value)
     Shuffleboard.getTab("My Tab").add("Tank PSI", tankPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
     Shuffleboard.getTab("My Tab").add("Regulator PSI", regulatorPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
