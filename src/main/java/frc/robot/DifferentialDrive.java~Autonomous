@@ -12,6 +12,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -123,7 +124,7 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
     m_leftMotor.set(ControlMode.PercentOutput, MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
     controllerVals[0] = MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput;
     m_rightMotor.set(ControlMode.PercentOutput, MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput);
-    controlVals[1] = MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput;
+    controllerVals[1] = MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput;
   }
 
   /**

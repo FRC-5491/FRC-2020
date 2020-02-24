@@ -5,7 +5,7 @@
 /*+----------------------------------------------------------------------+*/
 /*| Author(s): Jack Pirone                                               |*/
 /*+----------------------------------------------------------------------+*/
-/*| A special thanks to Maria P. and George R. for keeping me from going |*/
+/*| A special thanks to Maria P. for keeping me from going               |*/
 /*| insane while writing and documenting this code.                      |*/
 /*+----------------------------------------------------------------------+*/
 /*|                                                                      |*/
