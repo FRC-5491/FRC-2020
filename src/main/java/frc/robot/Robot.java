@@ -14,29 +14,18 @@
 //PACKAGE DECLARATION
 package frc.robot;
 
-//IMPORT STATEMENTS
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.PWMVictorSPX;
+//import edu.wpi.first.wpilibj.SpeedControllerGroup;
+//import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpiutil.math.MathUtil;
 
-/** 
- * //FOR PWM fallback//
- * import edu.wpi.first.wpilibj.PWMVictorSPX;
- * import edu.wpi.first.wpilibj.SpeedControllerGroup;
- * import edu.wpi.first.wpilibj.drive.DifferentialDrive;
- */
-
-//FOR CANbus//
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-import java.util.Map;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
 
@@ -58,7 +47,7 @@ public class Robot extends TimedRobot {
 
   //Drive Base//
   public DifferentialDrive robot = new DifferentialDrive(leftOne, leftTwo);
-
+ 
   //PS4 Controller//
   //Controller layout definition is as follows//
   //See controller_layout.png//
@@ -77,7 +66,6 @@ public class Robot extends TimedRobot {
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
-
     updateDiagVals();
 
     //SPEED CONTROLLER CONFIGURATION
@@ -131,12 +119,24 @@ public class Robot extends TimedRobot {
  * 
  */
   public void updateDiagVals(){
-    double tankPSI = airPressure(airPressure(tankPressure.getVoltage()));
-    double regulatorPSI = airPressure(airPressure(regulatorPressure.getVoltage()));
+
+    SmartDashboard.putNumber("Tank PSI",airPressure(airPressure(tankPressure.getVoltage())));
+    SmartDashboard.putNumber("Regulator PSI", airPressure(airPressure(regulatorPressure.getVoltage())));
+    SmartDashboard.putBoolean("Compressor On", c.enabled());
+    SmartDashboard.putBoolean("Pressure Switch", c.getPressureSwitchValue());
+    SmartDashboard.putNumber("Compressor Current", c.getCompressorCurrent());
+    SmartDashboard.putNumber("Right 1", (rightOne.getMotorOutputPercent() * 10));
+    SmartDashboard.putNumber("Right 2", (rightTwo.getMotorOutputPercent() * 10));
+    SmartDashboard.putNumber("Left 1", (leftOne.getMotorOutputPercent() * 10));
+    SmartDashboard.putNumber("Left 2", (leftTwo.getMotorOutputPercent() * 10));
     
-    //SmartDashboard.putNumber(key, value)
-    Shuffleboard.getTab("My Tab").add("Tank PSI", tankPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
-    Shuffleboard.getTab("My Tab").add("Regulator PSI", regulatorPSI).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 150, "Show value", 1)).getEntry();
+    
+
+    SmartDashboard.putData(pdp);
+    SmartDashboard.putData(robot);
+
+    
+
   }
 
   //---------------------------------------------------------------------------
