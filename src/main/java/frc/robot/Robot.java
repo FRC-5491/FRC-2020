@@ -16,6 +16,7 @@ package frc.robot;
 
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
 /** 
@@ -55,9 +57,7 @@ public class Robot extends TimedRobot {
   * PWMVictorSPX rightTwo = new PWMVictorSPX(1);
   * PWMVictorSPX leftOne = new PWMVictorSPX(2);
   * PWMVictorSPX leftTwo = new PWMVictorSPX(3);
-  * SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightOne, rightTwo);
-  * SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftOne, leftTwo);
-  * DifferentialDrive robotDrive = new DifferentialDrive(leftMotors, rightMotors);
+  * 
   */
   
   
@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
   VictorSPX rightTwo = new VictorSPX(2);
   VictorSPX leftOne = new VictorSPX(3);
   VictorSPX leftTwo = new VictorSPX(4);
- 
+
 
   //PS4 Controller//
   //Controller layout definition is as follows//
@@ -90,8 +90,12 @@ public class Robot extends TimedRobot {
     leftTwo.configOpenloopRamp(2.0);
     rightOne.configOpenloopRamp(2.0);
     rightTwo.configOpenloopRamp(2.0);
+    leftTwo.follow(leftOne);
+    rightTwo.follow(rightOne);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
+
+
     c.setClosedLoopControl(true);
     
 
