@@ -6,7 +6,11 @@
 /*| Author(s): Jack Pirone                                               |*/
 /*+----------------------------------------------------------------------+*/
 /*| A special thanks to Maria P. and George R. for keeping me from going |*/
+<<<<<<< HEAD
 /*| insane while documenting this code.                                  |*/
+=======
+/*| insane while writing and documenting this code.                      |*/
+>>>>>>> parent of 88b5c83... Bug Fixes
 /*+----------------------------------------------------------------------+*/
 /*|                                                                      |*/
 /*+----------------------------------------------------------------------|*/
