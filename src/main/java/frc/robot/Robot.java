@@ -23,8 +23,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
@@ -45,13 +46,17 @@ public class Robot extends TimedRobot {
   VictorSPX leftOne = new VictorSPX(3);  //CAN ID: 3
   VictorSPX leftTwo = new VictorSPX(4);  //CAN ID: 4
 
+  Solenoid solenoid1 = new Solenoid(0);
+  Solenoid solenoid2 = new Solenoid(1);
+  Solenoid solenoid3 = new Solenoid(6);
+  Solenoid solenoid4 = new Solenoid(7);
   //Drive Base//
   public DifferentialDrive robot = new DifferentialDrive(leftOne, leftTwo, rightOne, rightTwo);
  
   //PS4 Controller//
   //Controller layout definition is as follows//
   //See controller_layout.png//
-  Joystick driverStick = new Joystick(0);
+  XboxController driverStick = new XboxController(0);
   
   //Air Pressure Sensors//
   AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
@@ -67,6 +72,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     updateDiagVals();
+
+    solenoid1.setPulseDuration(0.5);
+    solenoid2.setPulseDuration(0.5);
+    solenoid3.setPulseDuration(0.5);
+    solenoid4.setPulseDuration(0.5);
+
 
     //SPEED CONTROLLER CONFIGURATION
     leftOne.configOpenloopRamp(2.0);
@@ -113,6 +124,10 @@ public class Robot extends TimedRobot {
 
     robot.arcadeDrive(driverStick.getY(), driverStick.getX());
     updateDiagVals();
+
+    if(driverStick.getAButton()){
+      solenoid1.startPulse();
+    }
   }
 //-----------------------------------------------------------------------------
 /**
