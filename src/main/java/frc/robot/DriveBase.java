@@ -1,8 +1,5 @@
 package frc.robot;
 
-import java.util.StringJoiner;
-
-import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -10,15 +7,12 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
-public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoCloseable {
+public class DriveBase extends RobotDriveBase implements Sendable, AutoCloseable {
   public static final double kDefaultQuickStopThreshold = 0.2;
   public static final double kDefaultQuickStopAlpha = 0.1;
 
@@ -31,21 +25,17 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
   private double m_quickStopThreshold = kDefaultQuickStopThreshold;
   private double m_quickStopAlpha = kDefaultQuickStopAlpha;
   private double m_quickStopAccumulator;
-  private double m_rightSideInvertMultiplier = -1.0;
-  private boolean m_reported;
-  private double[] controllerVals = {0.0, 0.0};
+    private boolean m_reported;
 
   /**
    * Construct a DifferentialDrive that uses VictorSPX CANbus Speed Controllers
    * 
    * @param leftMotor Lead VictorSPX left side speed controller.
-   * @param rightMotor Lead VictorSPX right side speed controller. THIS MUST BE INVERTED
+   * @param rightMotor Lead VictorSPX right side speed controller. THIS MUST BE INVERTED BEFORE BEING FED.
    */
-  public DifferentialDrive(VictorSPX leftMotor1, VictorSPX leftMotor2, VictorSPX rightMotor1, VictorSPX rightMotor2) {
-    m_leftMotor = leftMotor1;
-    m_rightMotor = rightMotor1;
-    leftMotor2.follow(leftMotor1);
-    rightMotor2.follow(rightMotor1);
+  public DriveBase(VictorSPX leftMotor,VictorSPX rightMotor) {
+    m_leftMotor = leftMotor;
+    m_rightMotor = rightMotor;
     SendableRegistry.addChild(this, m_leftMotor);
     SendableRegistry.addChild(this, m_rightMotor);
     instances++;
@@ -125,9 +115,7 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
     }
 
     m_leftMotor.set(ControlMode.PercentOutput, MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
-    controllerVals[0] = MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput;
     m_rightMotor.set(ControlMode.PercentOutput, MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput);
-    controllerVals[1] = MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * m_maxOutput;
   }
 
   /**
@@ -261,7 +249,7 @@ public class DifferentialDrive extends RobotDriveBase implements Sendable, AutoC
     builder.setSmartDashboardType("DifferentialDrive");
     builder.setActuator(true);
     builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Left Motor Speed",  () -> controllerVals[0], y -> m_leftMotor.set(ControlMode.PercentOutput, y));
-    builder.addDoubleProperty("Right Motor Speed", () -> controllerVals[1] * -1.0, x -> m_rightMotor.set(ControlMode.PercentOutput, x * -1.0));
+    builder.addDoubleProperty("Left Motor Speed",  () -> m_leftMotor.getMotorOutputPercent(), y -> m_leftMotor.set(ControlMode.PercentOutput, y));
+    builder.addDoubleProperty("Right Motor Speed", () -> m_rightMotor.getMotorOutputPercent(), x -> m_rightMotor.set(ControlMode.PercentOutput, x));
   }
 }
