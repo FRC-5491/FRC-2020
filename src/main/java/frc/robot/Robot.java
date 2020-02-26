@@ -17,6 +17,14 @@ package frc.robot;
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+<<<<<<< Autonomous
+=======
+
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Compressor;
+>>>>>>> Fixed issues created from merging
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -54,6 +62,7 @@ public class Robot extends TimedRobot {
 
   //Drive Base//
   public DriveBase robotDrivetrain = new DriveBase(leftOne, rightOne);
+<<<<<<< Autonomous
   
 <<<<<<< Autonomous
 <<<<<<< Autonomous
@@ -86,6 +95,8 @@ public class Robot extends TimedRobot {
   //See controller_layout.png//
   Joystick driverStick = new Joystick(0);
   
+=======
+>>>>>>> Fixed issues created from merging
 //-----------------------------------------------------------------------------
 >>>>>>> Undid a mistake
   @Override
@@ -183,6 +194,7 @@ public class Robot extends TimedRobot {
 
 //-----------------------------------------------------------------------------
 
+<<<<<<< Autonomous
 /**Updates the data values on the smartdashboard.
  * The Shuffleboard application can also view these
  * values.
@@ -242,4 +254,20 @@ public double airPressure(double aPv) {
 >>>>>>> See Changelog
 =======
 >>>>>>> Undid a mistake
+=======
+ /**Updates the data values on the smartdashboard.
+  * The Shuffleboard application can also view these
+  * values.
+  * 
+  */
+  public void updateDiagnostics(){
+    double tankPSI = tankPressure.airPressure();
+    double regulatorPSI = regulatorPressure.airPressure();
+
+    SmartDashboard.putData(pdp);
+
+    SmartDashboard.putNumber("Tank PSI", tankPSI);
+    SmartDashboard.putNumber("Regulator PSI", regulatorPSI);
+  }
+>>>>>>> Fixed issues created from merging
 }
