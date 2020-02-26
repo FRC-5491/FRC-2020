@@ -13,24 +13,32 @@
 
 //PACKAGE DECLARATION
 package frc.robot;
+
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.DriveBase;
+import frc.robot.DistanceSensor;
+import frc.robot.PressureSensor;
 
 public class Robot extends TimedRobot {
 
-  //Air Pressure Readings//
-  AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
-  AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
+  //Pressure Sensors//
+  PressureSensor tankPressure = new PressureSensor(0);
+  PressureSensor regulatorPressure = new PressureSensor(1); 
 
+  //Distance Sensors//
+  DistanceSensor front = new DistanceSensor(2);
+  DistanceSensor rear = new DistanceSensor(3);
+  
   //Driver Joystick//
-  XboxController driverStick = new XboxController(0);
+  Joystick driverStick = new Joystick(0);
 
   //CANbus <--> multiplexed. ADDRESSES ARE VERY IMPORTANT!!//
   PowerDistributionPanel pdp = new PowerDistributionPanel(0); //CAN ID: 0
@@ -38,13 +46,12 @@ public class Robot extends TimedRobot {
   VictorSPX rightTwo = new VictorSPX(2); //CAN ID: 2
   VictorSPX leftOne = new VictorSPX(3);  //CAN ID: 3
   VictorSPX leftTwo = new VictorSPX(4);  //CAN ID: 4
-  Compressor c = new Compressor(5);      //CAN ID: 5
+  public static Compressor c = new Compressor(6);      //CAN ID: 5
 
   //Solenoids//
-  Solenoid solenoid1 = new Solenoid(6, 0);
-  Solenoid solenoid2 = new Solenoid(6, 1);
-  Solenoid solenoid3 = new Solenoid(6, 6);
-  Solenoid solenoid4 = new Solenoid(6, 7);
+  Solenoid solenoid1 = new Solenoid(5, 7);
+  Solenoid solenoid2 = new Solenoid(5, 6);
+  Solenoid solenoid3 = new Solenoid(5, 1);
 
   //Drive Base//
   public DriveBase robotDrivetrain = new DriveBase(leftOne, rightOne);
@@ -78,10 +85,9 @@ public class Robot extends TimedRobot {
     
     updateDiagnostics();
 
-    solenoid1.setPulseDuration(0.5);
-    solenoid2.setPulseDuration(0.5);
-    solenoid3.setPulseDuration(0.5);
-    solenoid4.setPulseDuration(0.5);
+    solenoid1.setPulseDuration(1.0);
+    solenoid2.setPulseDuration(1.0);
+    solenoid3.setPulseDuration(1.0);
 
     leftOne.configOpenloopRamp(2.0);
     leftTwo.configOpenloopRamp(2.0);
@@ -91,7 +97,6 @@ public class Robot extends TimedRobot {
     rightTwo.follow(rightOne);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
-
     c.setClosedLoopControl(true);
 <<<<<<< Autonomous
 
@@ -141,8 +146,25 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     updateDiagnostics();
 
-    robotDrivetrain.arcadeDrive(driverStick.getY(), driverStick.getX());
+    robotDrivetrain.arcadeDrive(driverStick.getY() * -1, driverStick.getX());
     
+    if (driverStick.getRawButton(2)){
+      solenoid1.set(true);
+    }else{
+      solenoid1.set(false);
+    }
+
+    if (driverStick.getRawButton(1)){
+      solenoid2.set(true);
+    }else{
+      solenoid2.set(false);
+    }
+
+    if (driverStick.getRawButton(3)){
+      solenoid3.set(true);
+    }else{
+      solenoid3.set(false);
+    }
    
   }
 
@@ -155,8 +177,10 @@ public class Robot extends TimedRobot {
  */
   public void updateDiagnostics(){
 
-    SmartDashboard.putNumber("Tank PSI", airPressure(tankPressure.getAverageValue()));
-    SmartDashboard.putNumber("Regulator PSI", airPressure(regulatorPressure.getVoltage()));
+    SmartDashboard.putNumber("Tank PSI", tankPressure.airPressure());
+    SmartDashboard.putNumber("Regulator PSI", regulatorPressure.airPressure());
+    SmartDashboard.putNumber("Front distance to wall", front.getDistance());
+    SmartDashboard.putNumber("Rear distance to wall", rear.getDistance());
     SmartDashboard.putBoolean("Compressor On", c.enabled());
     SmartDashboard.putBoolean("Pressure Switch", c.getPressureSwitchValue());
     SmartDashboard.putNumber("Compressor Current", c.getCompressorCurrent());
@@ -168,6 +192,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(pdp);
     SmartDashboard.putData(robotDrivetrain);
   }
+<<<<<<< Autonomous
 
 <<<<<<< Autonomous
   /**
@@ -205,4 +230,6 @@ public double airPressure(double aPv) {
   aP = maath - 25;
   return aP;
 }
+=======
+>>>>>>> See Changelog
 }

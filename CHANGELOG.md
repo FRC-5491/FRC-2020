@@ -6,6 +6,24 @@ This project **DOES NOT** adhere to semantic versioning
 ## [Unreleased]
  - Autonomous code
 
+## [2.0.0] - 2020-02-25
+
+### Added
+ - DistanceSensor.java
+ - PressureSensor.java
+ - Pneumatics control
+
+### Changed
+ - Pressure calculations
+ - Controller type from XboxController to Joystick
+
+### Removed
+ - Air pressure calculation method
+
+### Fixed
+ - Bug that caused the "Circle of Death"
+
+
 ## [1.0.0] - 2020-02-05
 ### Added
  - JavaDoc comments to UpdateDiagnostics() and airPressure().
