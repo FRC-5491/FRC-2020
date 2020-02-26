@@ -14,10 +14,9 @@
 //PACKAGE DECLARATION
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Compressor;
+//IMPORT STATEMENTS
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -79,7 +78,16 @@ public class Robot extends TimedRobot {
   
   //----------------------------------------------------------------------------
 
+<<<<<<< Autonomous
 >>>>>>> Bug Fixes, Documentation Updates, Renamed Files, Added changelog
+=======
+  //PS4 Controller//
+  //Controller layout definition is as follows//
+  //See controller_layout.png//
+  Joystick driverStick = new Joystick(0);
+  
+//-----------------------------------------------------------------------------
+>>>>>>> Undid a mistake
   @Override
   public void robotInit() {
     
@@ -97,11 +105,16 @@ public class Robot extends TimedRobot {
     rightTwo.follow(rightOne);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
+<<<<<<< Autonomous
     c.setClosedLoopControl(true);
 <<<<<<< Autonomous
 
 =======
 >>>>>>> New Drive Code
+=======
+    
+
+>>>>>>> Undid a mistake
   }
 
   //----------------------------------------------------------------------------
@@ -175,23 +188,15 @@ public class Robot extends TimedRobot {
  * values.
  * 
  */
-  public void updateDiagnostics(){
+  public void updateDiagVals(){
+    ch0Amps = pdp.getCurrent(0);
+    ch1Amps = pdp.getCurrent(1);
+    ch2Amps = pdp.getCurrent(2);
+    ch3Amps = pdp.getCurrent(3);
 
-    SmartDashboard.putNumber("Tank PSI", tankPressure.airPressure());
-    SmartDashboard.putNumber("Regulator PSI", regulatorPressure.airPressure());
-    SmartDashboard.putNumber("Front distance to wall", front.getDistance());
-    SmartDashboard.putNumber("Rear distance to wall", rear.getDistance());
-    SmartDashboard.putBoolean("Compressor On", c.enabled());
-    SmartDashboard.putBoolean("Pressure Switch", c.getPressureSwitchValue());
-    SmartDashboard.putNumber("Compressor Current", c.getCompressorCurrent());
-    SmartDashboard.putNumber("Right 1", (rightOne.getMotorOutputPercent() * 10));
-    SmartDashboard.putNumber("Right 2", (rightTwo.getMotorOutputPercent() * 10));
-    SmartDashboard.putNumber("Left 1", (leftOne.getMotorOutputPercent() * 10));
-    SmartDashboard.putNumber("Left 2", (leftTwo.getMotorOutputPercent() * 10));
-    
     SmartDashboard.putData(pdp);
-    SmartDashboard.putData(robotDrivetrain);
   }
+<<<<<<< Autonomous
 <<<<<<< Autonomous
 
 <<<<<<< Autonomous
@@ -218,6 +223,8 @@ public class Robot extends TimedRobot {
     return aP;
     aP = maath - 25;
   }
+=======
+>>>>>>> Undid a mistake
 }
 
 //---------------------------------------------------------------------------
@@ -230,6 +237,9 @@ public double airPressure(double aPv) {
   aP = maath - 25;
   return aP;
 }
+<<<<<<< Autonomous
 =======
 >>>>>>> See Changelog
+=======
+>>>>>>> Undid a mistake
 }
