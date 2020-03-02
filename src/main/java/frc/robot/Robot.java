@@ -23,7 +23,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
->>>>>>> Fixed issues created from merging
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -59,7 +59,6 @@ public class Robot extends TimedRobot {
   //Drive Base//
   public DriveBase robotDrivetrain = new DriveBase(leftOne, rightOne);
 //-----------------------------------------------------------------------------
->>>>>>> Undid a mistake
   @Override
   public void robotInit() {
     updateDiagnostics();
@@ -72,21 +71,9 @@ public class Robot extends TimedRobot {
     rightTwo.follow(rightOne);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
-<<<<<<< Autonomous
     c.setClosedLoopControl(true);
     solenoid1.set(false);
     solenoid2.set(false);
-
-=======
->>>>>>> New Drive Code
-=======
-    
-=======
-    solenoid1.set(false);
-    solenoid2.set(false);
->>>>>>> Autonomous + Competition Changes
-
->>>>>>> Undid a mistake
   }
 
   //----------------------------------------------------------------------------
