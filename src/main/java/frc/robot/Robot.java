@@ -17,8 +17,6 @@ package frc.robot;
 //IMPORT STATEMENTS
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-<<<<<<< Autonomous
-=======
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -60,41 +58,6 @@ public class Robot extends TimedRobot {
 
   //Drive Base//
   public DriveBase robotDrivetrain = new DriveBase(leftOne, rightOne);
-<<<<<<< Autonomous
-  
-<<<<<<< Autonomous
-<<<<<<< Autonomous
-  AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
-  AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
-
-  public static Compressor c = new Compressor(0);
-=======
-  //Air Pressure Sensors//
-  AnalogInput tankPressure = new AnalogInput(0); //Pressure readings
-  AnalogInput regulatorPressure = new AnalogInput(1); //Pressure readings
-
-  //Compressor -- CAN ID: 5//
-  public static Compressor c = new Compressor(5);
-
-  //PDP -- CAN ID: 0//
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);  
-
->>>>>>> New Drive Code
-//-----------------------------------------------------------------------------
-=======
-  
-  //----------------------------------------------------------------------------
-
-<<<<<<< Autonomous
->>>>>>> Bug Fixes, Documentation Updates, Renamed Files, Added changelog
-=======
-  //PS4 Controller//
-  //Controller layout definition is as follows//
-  //See controller_layout.png//
-  Joystick driverStick = new Joystick(0);
-  
-=======
->>>>>>> Fixed issues created from merging
 //-----------------------------------------------------------------------------
 >>>>>>> Undid a mistake
   @Override
@@ -111,8 +74,8 @@ public class Robot extends TimedRobot {
     rightTwo.setInverted(true);
 <<<<<<< Autonomous
     c.setClosedLoopControl(true);
-<<<<<<< Autonomous
-<<<<<<< Autonomous
+    solenoid1.set(false);
+    solenoid2.set(false);
 
 =======
 >>>>>>> New Drive Code
@@ -213,67 +176,6 @@ public class Robot extends TimedRobot {
 
 //-----------------------------------------------------------------------------
 
-<<<<<<< Autonomous
-/**Updates the data values on the smartdashboard.
- * The Shuffleboard application can also view these
- * values.
- * 
- */
-  public void updateDiagVals(){
-    ch0Amps = pdp.getCurrent(0);
-    ch1Amps = pdp.getCurrent(1);
-    ch2Amps = pdp.getCurrent(2);
-    ch3Amps = pdp.getCurrent(3);
-
-    SmartDashboard.putData(pdp);
-  }
-<<<<<<< Autonomous
-<<<<<<< Autonomous
-
-<<<<<<< Autonomous
-  /**
-  //---------------------------------------------------------------------------
-   * 
-=======
-  //---------------------------------------------------------------------------
-
-  /**
-   * This method calculates the air pressure in PSI from the REV Robotics PSI sensor.
-   * 
-   * @param aPv The voltage of the air pressure sensor.
-   * @return The air pressure in PSI.
-   */
->>>>>>> Bug Fixes, Documentation Updates, Renamed Files, Added changelog
-  public double airPressure(double aPv) {
-   */
-    double aP;
-    double math;
-    double maath;
-    maath = 250 * math;
-    math = aPv / 5;
-    return aP;
-    aP = maath - 25;
-  }
-=======
->>>>>>> Undid a mistake
-}
-
-//---------------------------------------------------------------------------
-public double airPressure(double aPv) {
-  double aP;
-  double math;
-  double maath;
-  math = aPv / 5;
-  maath = 250 * math;
-  aP = maath - 25;
-  return aP;
-}
-<<<<<<< Autonomous
-=======
->>>>>>> See Changelog
-=======
->>>>>>> Undid a mistake
-=======
  /**Updates the data values on the smartdashboard.
   * The Shuffleboard application can also view these
   * values.
@@ -294,5 +196,4 @@ public double airPressure(double aPv) {
     SmartDashboard.putBoolean("Front Piston", solenoid1.get());
     SmartDashboard.putBoolean("Rear Piston", solenoid2.get());
   }
->>>>>>> Fixed issues created from merging
 }
