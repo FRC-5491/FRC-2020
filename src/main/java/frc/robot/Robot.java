@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DriveBase;
-import frc.robot.DistanceSensor;
 import frc.robot.PressureSensor;
 
 public class Robot extends TimedRobot {
@@ -38,8 +37,8 @@ public class Robot extends TimedRobot {
   PressureSensor regulatorPressure = new PressureSensor(1); 
 
   //Distance Sensors//
-  DistanceSensor front = new DistanceSensor(2);
-  DistanceSensor rear = new DistanceSensor(3);
+  AnalogInput front = new AnalogInput(2);
+  AnalogInput rear = new AnalogInput(3);
   
   //Driver Joystick//
   Joystick driverStick = new Joystick(0);
@@ -55,29 +54,25 @@ public class Robot extends TimedRobot {
   //Solenoids//
   Solenoid solenoid1 = new Solenoid(5, 7);
   Solenoid solenoid2 = new Solenoid(5, 6);
-  Solenoid solenoid3 = new Solenoid(5, 1);
 
   //Drive Base//
   public DriveBase robotDrivetrain = new DriveBase(leftOne, rightOne);
 //-----------------------------------------------------------------------------
   @Override
   public void robotInit() {
-    
     updateDiagnostics();
 
-    solenoid1.setPulseDuration(1.0);
-    solenoid2.setPulseDuration(1.0);
-    solenoid3.setPulseDuration(1.0);
-
-    leftOne.configOpenloopRamp(2.0);
-    leftTwo.configOpenloopRamp(2.0);
-    rightOne.configOpenloopRamp(2.0);
-    rightTwo.configOpenloopRamp(2.0);
+    leftOne.configOpenloopRamp(1.75);
+    leftTwo.configOpenloopRamp(1.75);
+    rightOne.configOpenloopRamp(1.75);
+    rightTwo.configOpenloopRamp(1.75);
     leftTwo.follow(leftOne);
     rightTwo.follow(rightOne);
     rightOne.setInverted(true);
     rightTwo.setInverted(true);
     c.setClosedLoopControl(true);
+    solenoid1.set(false);
+    solenoid2.set(false);
 
   }
 
@@ -86,6 +81,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     updateDiagnostics();
+    solenoid1.set(false);
+    solenoid2.set(false);
   }
 
   //----------------------------------------------------------------------------
@@ -93,6 +90,17 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     updateDiagnostics();
+    while(front.getVoltage() > 0.49) {
+      solenoid1.set(false);
+      solenoid2.set(false);
+      leftOne.set(ControlMode.PercentOutput, 0.35);
+      rightOne.set(ControlMode.PercentOutput, 0.35);
+      
+    }
+    leftOne.set(ControlMode.PercentOutput, 0.0);
+    rightOne.set(ControlMode.PercentOutput, 0.0);
+      solenoid1.set(true);
+      solenoid2.set(true);
   }
 
   //----------------------------------------------------------------------------
@@ -107,6 +115,19 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     updateDiagnostics();
+    robotDrivetrain.arcadeDrive(((driverStick.getY() * -1)*0.95), (driverStick.getX()* 0.75));
+  
+    if (driverStick.getRawButton(2)){
+      solenoid1.set(true);
+    }else{
+      solenoid1.set(false);
+    }
+
+    if (driverStick.getRawButton(1)){
+      solenoid2.set(true);
+    }else{
+      solenoid2.set(false);
+    }
   
   }
 
@@ -137,12 +158,7 @@ public class Robot extends TimedRobot {
       solenoid2.set(false);
     }
 
-    if (driverStick.getRawButton(3)){
-      solenoid3.set(true);
-    }else{
-      solenoid3.set(false);
-    }
-   
+    
   }
 
 //-----------------------------------------------------------------------------
@@ -155,10 +171,16 @@ public class Robot extends TimedRobot {
   public void updateDiagnostics(){
     double tankPSI = tankPressure.airPressure();
     double regulatorPSI = regulatorPressure.airPressure();
-
+    SmartDashboard.putNumber("distance", front.getVoltage());
     SmartDashboard.putData(pdp);
+    SmartDashboard.putNumber("Left 1", leftOne.getMotorOutputPercent());
+    SmartDashboard.putNumber("Left 2", leftTwo.getMotorOutputPercent());
+    SmartDashboard.putNumber("Right 2", rightTwo.getMotorOutputPercent());
+    SmartDashboard.putNumber("Right 1", rightOne.getMotorOutputPercent());
 
     SmartDashboard.putNumber("Tank PSI", tankPSI);
     SmartDashboard.putNumber("Regulator PSI", regulatorPSI);
+    SmartDashboard.putBoolean("Front Piston", solenoid1.get());
+    SmartDashboard.putBoolean("Rear Piston", solenoid2.get());
   }
 }
