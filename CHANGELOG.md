@@ -4,7 +4,25 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project **DOES NOT** adhere to semantic versioning
 
 ## [Unreleased]
+ - Fixed DistanceSensor.java class
+ - Autonomous with better fuctionality
+ - Cameras?
+ - 180 Degree turn button
+
+## [3.0.0] - 2020-03-21
+
+### Added
  - Autonomous code
+
+### Changed
+ - Distance sensors are read as generic analog inputs due to bugs involving the DistanceSensor class.
+
+### Removed
+ - DistanceSensor.java
+
+### Fixed
+ - Solenoids starting in the open position when they should be closed.s
+
 
 ## [2.0.0] - 2020-02-25
 
